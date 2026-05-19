@@ -1,14 +1,28 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Sport Hub</string>
     <string name="login_subtitle">Monitoreo deportivo con consumo de apis</string>
 
+    <!-- Form Labels and Placeholders -->
     <string name="email_label">Correo Electrónico</string>
     <string name="email_placeholder">correo@ejemplo.com</string>
     <string name="password_label">Contraseña</string>
     <string name="password_placeholder">••••••••</string>
 
+    <!-- Buttons and Dividers -->
     <string name="btn_login">Iniciar Sesión</string>
     <string name="or_divider">O</string>
     <string name="btn_guest">Continuar como Invitado</string>
-</resources>
 
+    <!-- Register Specific -->
+    <string name="register_title">Crear Cuenta</string>
+    <string name="register_subtitle">Únete a la comunidad de sports hub.</string>
+    <string name="name_label">Nombre Completo</string>
+    <string name="name_placeholder">Tu nombre y apellido</string>
+    <string name="confirm_password_label">Confirmar Contraseña</string>
+    <string name="btn_register">Registrarse</string>
+
+    <!-- Navigation Links -->
+    <string name="link_to_register">¿No tienes cuenta? Regístrate</string>
+    <string name="link_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+</resources>
