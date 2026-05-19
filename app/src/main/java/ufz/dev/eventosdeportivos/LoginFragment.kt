@@ -24,17 +24,8 @@ class LoginFragment : Fragment() {
         val tvLinkToRegister = view.findViewById<TextView>(R.id.tv_link_to_register)
 
         tvLinkToRegister?.setOnClickListener {
-            // Reemplazar este fragmento por el RegisterFragment
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-                )
-                .replace(R.id.fragment_container, RegisterFragment())
-                .addToBackStack(null) // Permite regresar al Login con el botón Atrás
-                .commit()
+            // Reemplazar este fragmento por el RegisterFragment usando la extension de utilidad
+            parentFragmentManager.navigateTo(RegisterFragment())
         }
     }
 }

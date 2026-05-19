@@ -25,21 +25,8 @@ class RegisterFragment : Fragment() {
         val tvLinkToLogin = view.findViewById<TextView>(R.id.tv_link_to_login)
 
         tvLinkToLogin?.setOnClickListener {
-            // Regresar al LoginFragment quitando este fragmento del BackStack
-            if (parentFragmentManager.backStackEntryCount > 0) {
-                parentFragmentManager.popBackStack()
-            } else {
-                // Alternativa de seguridad por si no hay historial
-                parentFragmentManager.beginTransaction()
-                    .setCustomAnimations(
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                    )
-                    .replace(R.id.fragment_container, LoginFragment())
-                    .commit()
-            }
+            // Regresar de manera segura al LoginFragment usando la extension de utilidad
+            parentFragmentManager.navigateBackOr(LoginFragment())
         }
     }
 }
