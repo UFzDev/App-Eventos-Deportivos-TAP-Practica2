@@ -25,4 +25,18 @@
     <!-- Navigation Links -->
     <string name="link_to_register">¿No tienes cuenta? Regístrate</string>
     <string name="link_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Home / Dashboard Specific -->
+    <string name="home_welcome_title">Sesión Activa</string>
+    <string name="home_welcome_subtitle">Acceso deportivo autorizado</string>
+    <string name="home_user_prefix">Entró: %1$s</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+
+    <!-- Feedback and Errors -->
+    <string name="error_empty_fields">Por favor, llena todos los campos</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="error_password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_auth_failed">Fallo en la autenticación. Revisa tus credenciales</string>
+    <string name="error_register_failed">Fallo en el registro. Intenta de nuevo</string>
+    <string name="success_register">¡Usuario creado exitosamente!</string>
 </resources>

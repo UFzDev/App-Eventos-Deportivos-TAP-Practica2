@@ -61,3 +61,29 @@ fun FragmentManager.navigateBackOr(
         )
     }
 }
+
+/**
+ * Limpia todas las entradas de la pila de retroceso (BackStack) y realiza una navegación limpia
+ * hacia el fragmento indicado sin registrar historial previo. Útil para Login exitoso y Logout.
+ *
+ * @param fragment Instancia del Fragment de destino al que se desea navegar.
+ * @param containerId ID del contenedor XML. Por defecto usa [R.id.fragment_container].
+ */
+fun FragmentManager.clearBackStackAndNavigateTo(
+    fragment: Fragment,
+    @IdRes containerId: Int = R.id.fragment_container
+) {
+    if (backStackEntryCount > 0) {
+        popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+    }
+    beginTransaction().apply {
+        setCustomAnimations(
+            android.R.anim.fade_in,
+            android.R.anim.fade_out,
+            android.R.anim.fade_in,
+            android.R.anim.fade_out
+        )
+        replace(containerId, fragment)
+        commit()
+    }
+}
