@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bg_dark">#0B1326</color>
+    <color name="surface_card">#131B2E</color>
+    <color name="primary_sport">#C0C1FF</color>
+    <color name="on_primary_sport">#1000A9</color>
+    <color name="inverse_primary_sport">#494BD6</color>
+    <color name="text_primary">#DAE2FD</color>
+    <color name="text_secondary">#C7C4D7</color>
+    <color name="outline_border">#464554</color>
 </resources>
+

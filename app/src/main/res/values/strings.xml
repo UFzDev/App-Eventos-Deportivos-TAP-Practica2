@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">EVENTOS DEPORTIVOS</string>
+    <string name="app_name">Sport Hub</string>
+    <string name="login_subtitle">Monitoreo deportivo con consumo de apis</string>
+
+    <string name="email_label">Correo Electrónico</string>
+    <string name="email_placeholder">correo@ejemplo.com</string>
+    <string name="password_label">Contraseña</string>
+    <string name="password_placeholder">••••••••</string>
+
+    <string name="btn_login">Iniciar Sesión</string>
+    <string name="or_divider">O</string>
+    <string name="btn_guest">Continuar como Invitado</string>
 </resources>
+
