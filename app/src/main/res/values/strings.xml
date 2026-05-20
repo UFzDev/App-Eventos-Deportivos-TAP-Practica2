@@ -55,4 +55,5 @@
     <string name="title_brand">FÚTBOL HUB</string>
     <string name="desc_notifications">Sin Notificaciones Nuevas</string>
     <string name="desc_logout">Cerrar sesión</string>
+    <string name="desc_refresh">Actualizar contenido</string>
 </resources>

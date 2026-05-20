@@ -71,7 +71,21 @@ class NewsFragment : Fragment() {
         rvNews.adapter = newsAdapter
     }
 
+    fun refresh() {
+        newsList.clear()
+        loadNewsFeed()
+        Toast.makeText(context, "Actualizando noticias de fútbol...", Toast.LENGTH_SHORT).show()
+    }
+
     private fun loadNewsFeed() {
+        // Si ya tenemos noticias en memoria, evitamos hacer la petición HTTP redundante
+        if (newsList.isNotEmpty()) {
+            showLoading(false)
+            showError(false)
+            newsAdapter.updateList(newsList)
+            return
+        }
+
         showLoading(true)
         showError(false)
 

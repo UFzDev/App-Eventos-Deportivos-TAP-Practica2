@@ -59,6 +59,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
+        <!-- Refresh Action Button -->
+        <ImageButton
+            android:id="@+id/btn_action_refresh"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_refresh"
+            app:tint="@color/text_secondary"
+            android:contentDescription="@string/desc_refresh"
+            app:layout_constraintEnd_toStartOf="@id/btn_action_notifications"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Bottom border for top bar -->
