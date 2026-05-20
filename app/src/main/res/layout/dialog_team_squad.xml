@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/surface_card"
+    android:paddingBottom="24dp">
+
+    <!-- Drag Handle indicator -->
+    <View
+        android:id="@+id/view_drag_handle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/outline_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Team Logo Header -->
+    <ImageView
+        android:id="@+id/img_dialog_team_logo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_drag_handle"
+        tools:src="@android:drawable/ic_menu_gallery"
+        android:contentDescription="Escudo del club" />
+
+    <!-- Header Text -->
+    <TextView
+        android:id="@+id/tv_dialog_team_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_dialog_subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/img_dialog_team_logo"
+        app:layout_constraintTop_toTopOf="@id/img_dialog_team_logo"
+        tools:text="Plantilla de Jugadores" />
+
+    <TextView
+        android:id="@+id/tv_dialog_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_sport"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="ELENCO OFICIAL Y DORSALES"
+        app:layout_constraintBottom_toBottomOf="@id/img_dialog_team_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tv_dialog_team_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_dialog_team_title" />
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/divider_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/outline_border"
+        app:layout_constraintTop_toBottomOf="@id/img_dialog_team_logo" />
+
+    <!-- Loading State -->
+    <ProgressBar
+        android:id="@+id/progress_dialog_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:indeterminateTint="@color/primary_sport"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_dialog" />
+
+    <!-- RecyclerView for Players List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_dialog_players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="300dp"
+        app:layout_constraintHeight_max="500dp"
+        app:layout_constraintTop_toBottomOf="@id/divider_dialog"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/item_player" />
+
+    <!-- Error State -->
+    <LinearLayout
+        android:id="@+id/layout_dialog_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/divider_dialog">
+
+        <TextView
+            android:id="@+id/tv_dialog_error_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingHorizontal="24dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:text="No se pudo cargar la plantilla oficial del equipo o tu plan gratuito no tiene acceso a estos datos." />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

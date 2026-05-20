@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface_card">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Team Badge Shield -->
+        <ImageView
+            android:id="@+id/img_team_badge"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@android:drawable/ic_menu_gallery"
+            android:contentDescription="Escudo del equipo" />
+
+        <!-- Team Info Container -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintStart_toEndOf="@id/img_team_badge"
+            app:layout_constraintEnd_toStartOf="@id/img_team_info"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Team Name -->
+            <TextView
+                android:id="@+id/tv_team_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Real Madrid CF" />
+
+            <!-- Founded Year -->
+            <TextView
+                android:id="@+id/tv_team_founded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/primary_sport"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.03"
+                android:background="@color/outline_border"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                tools:text="FUNDADO EN 1902" />
+
+        </LinearLayout>
+
+        <!-- Interactive Info Icon -->
+        <ImageView
+            android:id="@+id/img_team_info"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_info"
+            android:contentDescription="Ver plantilla"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

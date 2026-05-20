@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface_card">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Guideline Center -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/center_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <!-- Home Team Block -->
+        <LinearLayout
+            android:id="@+id/layout_home_team"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/layout_score"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Home Badge -->
+            <ImageView
+                android:id="@+id/img_home_badge"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:scaleType="fitCenter"
+                tools:src="@android:drawable/ic_menu_gallery"
+                android:contentDescription="Escudo local" />
+
+            <!-- Home Name -->
+            <TextView
+                android:id="@+id/tv_home_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Barcelona" />
+
+        </LinearLayout>
+
+        <!-- Score & Time Block -->
+        <LinearLayout
+            android:id="@+id/layout_score"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/layout_home_team"
+            app:layout_constraintEnd_toStartOf="@id/layout_away_team"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.32">
+
+            <!-- Score Display -->
+            <TextView
+                android:id="@+id/tv_match_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondary_sport"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="3 - 1" />
+
+            <!-- Date Display -->
+            <TextView
+                android:id="@+id/tv_match_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                tools:text="2026-05-24" />
+
+            <!-- League Tag -->
+            <TextView
+                android:id="@+id/tv_match_league"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="9sp"
+                android:alpha="0.7"
+                tools:text="La Liga" />
+
+        </LinearLayout>
+
+        <!-- Away Team Block -->
+        <LinearLayout
+            android:id="@+id/layout_away_team"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/layout_score"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Away Badge -->
+            <ImageView
+                android:id="@+id/img_away_badge"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:scaleType="fitCenter"
+                tools:src="@android:drawable/ic_menu_gallery"
+                android:contentDescription="Escudo visitante" />
+
+            <!-- Away Name -->
+            <TextView
+                android:id="@+id/tv_away_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Real Madrid" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

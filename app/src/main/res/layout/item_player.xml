@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="10dp">
+
+    <!-- Player Photo -->
+    <ImageView
+        android:id="@+id/img_player_photo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@android:drawable/ic_menu_gallery"
+        android:contentDescription="Foto del jugador" />
+
+    <!-- Name and Info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_player_number"
+        app:layout_constraintStart_toEndOf="@id/img_player_photo"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Player Name -->
+        <TextView
+            android:id="@+id/tv_player_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Luka Modrić" />
+
+        <!-- Player Position -->
+        <TextView
+            android:id="@+id/tv_player_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="Mediocampista" />
+
+    </LinearLayout>
+
+    <!-- Player Number -->
+    <TextView
+        android:id="@+id/tv_player_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_sport"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:background="@color/outline_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="10" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

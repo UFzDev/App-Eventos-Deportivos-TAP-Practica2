@@ -41,6 +41,9 @@ android {
         // Inyección de API Key desde el archivo .env
         val currentsApiKey = getEnvValue("CURRENTS_API_KEY")
         buildConfigField("String", "CURRENTS_API_KEY", "\"$currentsApiKey\"")
+
+        val apiFootballKey = getEnvValue("API_FOOTBALL_KEY")
+        buildConfigField("String", "API_FOOTBALL_KEY", "\"$apiFootballKey\"")
     }
 
     buildTypes {
