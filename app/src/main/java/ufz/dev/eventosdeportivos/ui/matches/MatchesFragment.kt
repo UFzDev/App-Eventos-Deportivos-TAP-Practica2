@@ -21,13 +21,23 @@ import retrofit2.Response
 
 class MatchesFragment : Fragment() {
 
+    private lateinit var rvLiveMatches: RecyclerView
     private lateinit var rvMatches: RecyclerView
     private lateinit var progressLoading: ProgressBar
     private lateinit var layoutErrorState: LinearLayout
     private lateinit var btnRetry: Button
 
+    private lateinit var liveAdapter: LiveMatchAdapter
     private lateinit var matchAdapter: MatchAdapter
+
+    private val liveList = ArrayList<FixtureResponseItem>()
     private val matchList = ArrayList<FixtureResponseItem>()
+
+    // Banderas de coordinación de red
+    private var isLiveLoaded = false
+    private var isPastLoaded = false
+    private var liveRequestFailed = false
+    private var pastRequestFailed = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,12 +45,13 @@ class MatchesFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_matches, container, false)
 
+        rvLiveMatches = view.findViewById(R.id.rv_live_matches)
         rvMatches = view.findViewById(R.id.rv_matches)
         progressLoading = view.findViewById(R.id.progress_loading)
         layoutErrorState = view.findViewById(R.id.layout_error_state)
         btnRetry = view.findViewById(R.id.btn_retry)
 
-        setupRecyclerView()
+        setupRecyclerViews()
         loadMatches()
 
         btnRetry.setOnClickListener {
@@ -50,15 +61,24 @@ class MatchesFragment : Fragment() {
         return view
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerViews() {
+        // 1. Carrusel Horizontal en Vivo
+        liveAdapter = LiveMatchAdapter(liveList) { match ->
+            Toast.makeText(context, "¡Marcador en vivo! ${match.teams.home.name} ${match.goals.home ?: 0} - ${match.goals.away ?: 0} ${match.teams.away.name}", Toast.LENGTH_SHORT).show()
+        }
+        rvLiveMatches.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        rvLiveMatches.adapter = liveAdapter
+
+        // 2. Historial Vertical Normal
         matchAdapter = MatchAdapter(matchList) { match ->
-            Toast.makeText(context, "${match.teams.home.name} vs ${match.teams.away.name} - ¡Gran encuentro futbolístico!", Toast.LENGTH_SHORT).show()
+            // Acción de clic silenciosa en el historial de partidos
         }
         rvMatches.layoutManager = LinearLayoutManager(context)
         rvMatches.adapter = matchAdapter
     }
 
     fun refresh() {
+        liveList.clear()
         matchList.clear()
         loadMatches()
         Toast.makeText(context, "Sincronizando marcadores deportivos...", Toast.LENGTH_SHORT).show()
@@ -66,87 +86,166 @@ class MatchesFragment : Fragment() {
 
     private fun loadMatches() {
         // Evitar redundancia HTTP si ya tenemos marcadores en memoria
-        if (matchList.isNotEmpty()) {
+        if (matchList.isNotEmpty() || liveList.isNotEmpty()) {
             showLoading(false)
             showError(false)
+            liveAdapter.updateList(liveList)
             matchAdapter.updateList(matchList)
             return
         }
 
         showLoading(true)
         showError(false)
+        isLiveLoaded = false
+        isPastLoaded = false
+        liveRequestFailed = false
+        pastRequestFailed = false
+
+        liveList.clear()
         matchList.clear()
 
-        // Cargar últimos 15 marcadores de La Liga de España (ID 140, temporada 2024)
-        RetrofitClient.footballInstance.getPastMatchesByLeague(leagueId = 140, season = 2024, lastCount = 15)
+        fetchLiveMatches()
+        fetchPastMatches()
+    }
+
+    private fun checkAllRequestsCompleted() {
+        if (isLiveLoaded && isPastLoaded) {
+            showLoading(false)
+            if (pastRequestFailed && matchList.isEmpty()) {
+                showError(true)
+            } else {
+                showError(false)
+                liveAdapter.updateList(liveList)
+                matchAdapter.updateList(matchList)
+            }
+        }
+    }
+
+    private fun fetchLiveMatches() {
+        // Cargar todos los partidos en vivo en tiempo real
+        RetrofitClient.footballInstance.getLiveMatches("all")
             .enqueue(object : Callback<FootballFixtureResponse> {
                 override fun onResponse(call: Call<FootballFixtureResponse>, response: Response<FootballFixtureResponse>) {
-                    showLoading(false)
+                    isLiveLoaded = true
                     if (response.isSuccessful && response.body() != null) {
                         val body = response.body()!!
                         
-                        // Diagnóstico de Errores nativos de API-Football (devueltos bajo HTTP 200)
+                        // Diagnóstico de Errores nativos
                         val errorsObj = body.errors
                         if (errorsObj != null && !errorsObj.isJsonNull) {
+                            var errorMsg = ""
                             if (errorsObj.isJsonObject) {
                                 val obj = errorsObj.asJsonObject
                                 if (obj.size() > 0) {
                                     val firstKey = obj.keySet().firstOrNull()
-                                    val errorMsg = obj.get(firstKey)?.asString ?: "Error desconocido"
-                                    android.util.Log.e("MatchesFragment", "Error de API-Football: $errorMsg")
-                                    Toast.makeText(context, "API Error: $errorMsg", Toast.LENGTH_LONG).show()
-                                    showError(true)
-                                    return
+                                    errorMsg = obj.get(firstKey)?.asString ?: "Error desconocido"
                                 }
                             } else if (errorsObj.isJsonPrimitive) {
-                                val errorMsg = errorsObj.asString
-                                if (errorMsg.isNotEmpty()) {
-                                    android.util.Log.e("MatchesFragment", "Error de API-Football: $errorMsg")
-                                    Toast.makeText(context, "API Error: $errorMsg", Toast.LENGTH_LONG).show()
-                                    showError(true)
-                                    return
-                                }
+                                errorMsg = errorsObj.asString
+                            }
+                            if (errorMsg.isNotEmpty()) {
+                                android.util.Log.e("MatchesFragment", "Error de API-Football (Live): $errorMsg")
+                                liveRequestFailed = true
                             }
                         }
 
                         val events = body.response
                         if (!events.isNullOrEmpty()) {
-                            matchList.addAll(events)
+                            // Agregar todos los partidos en vivo a nivel mundial
+                            liveList.addAll(events)
                         }
-                    }
-
-                    if (matchList.isNotEmpty()) {
-                        // Ordenar por fecha cronológica descendente
-                        matchList.sortByDescending { it.fixture.date ?: "" }
-                        matchAdapter.updateList(matchList)
-                        showError(false)
                     } else {
-                        showError(true)
-                        val errorDetail = response.errorBody()?.string() ?: "Respuesta vacía"
-                        android.util.Log.e("MatchesFragment", "Error en API-Football (Fixtures): $errorDetail")
-                        Toast.makeText(context, "No se encontraron marcadores deportivos globales o tu API Key es inválida.", Toast.LENGTH_LONG).show()
+                        android.util.Log.e("MatchesFragment", "Fallo HTTP en vivo: ${response.code()}")
+                        liveRequestFailed = true
                     }
+                    checkAllRequestsCompleted()
                 }
 
                 override fun onFailure(call: Call<FootballFixtureResponse>, t: Throwable) {
-                    showLoading(false)
-                    showError(true)
-                    Toast.makeText(
-                        context,
-                        "Error de conexión: ${t.localizedMessage ?: "Fallo de red"}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    isLiveLoaded = true
+                    liveRequestFailed = true
+                    android.util.Log.e("MatchesFragment", "Fallo de conexión en vivo: ${t.localizedMessage}")
+                    checkAllRequestsCompleted()
+                }
+            })
+    }
+
+    private fun fetchPastMatches() {
+        // Calcular dinámicamente la fecha del día anterior (ayer)
+        val cal = java.util.Calendar.getInstance()
+        cal.add(java.util.Calendar.DATE, -1)
+        val dateStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(cal.time)
+
+        // Cargar marcadores de todo el mundo de la fecha de ayer
+        RetrofitClient.footballInstance.getMatchesByDate(dateStr)
+            .enqueue(object : Callback<FootballFixtureResponse> {
+                override fun onResponse(call: Call<FootballFixtureResponse>, response: Response<FootballFixtureResponse>) {
+                    isPastLoaded = true
+                    if (response.isSuccessful && response.body() != null) {
+                        val body = response.body()!!
+                        
+                        // Diagnóstico de Errores nativos de API-Football
+                        val errorsObj = body.errors
+                        if (errorsObj != null && !errorsObj.isJsonNull) {
+                            var errorMsg = ""
+                            if (errorsObj.isJsonObject) {
+                                val obj = errorsObj.asJsonObject
+                                if (obj.size() > 0) {
+                                    val firstKey = obj.keySet().firstOrNull()
+                                    errorMsg = obj.get(firstKey)?.asString ?: "Error"
+                                }
+                            } else if (errorsObj.isJsonPrimitive) {
+                                errorMsg = errorsObj.asString
+                            }
+                            if (errorMsg.isNotEmpty()) {
+                                android.util.Log.e("MatchesFragment", "Error de API-Football (Historial): $errorMsg")
+                                Toast.makeText(context, "API Error: $errorMsg", Toast.LENGTH_LONG).show()
+                                pastRequestFailed = true
+                            }
+                        }
+
+                        val events = body.response
+                        if (!events.isNullOrEmpty()) {
+                            // Filtrar por partidos finalizados (FT) y ordenar por fecha descendente
+                            val sortedCompleted = events
+                                .filter { it.fixture.status.short == "FT" }
+                                .sortedByDescending { it.fixture.date ?: "" }
+                                .take(25)
+                            matchList.addAll(sortedCompleted)
+                        }
+                    } else {
+                        android.util.Log.e("MatchesFragment", "Fallo HTTP historial: ${response.code()}")
+                        pastRequestFailed = true
+                    }
+                    checkAllRequestsCompleted()
+                }
+
+                override fun onFailure(call: Call<FootballFixtureResponse>, t: Throwable) {
+                    isPastLoaded = true
+                    pastRequestFailed = true
+                    android.util.Log.e("MatchesFragment", "Fallo de conexión historial: ${t.localizedMessage}")
+                    checkAllRequestsCompleted()
                 }
             })
     }
 
     private fun showLoading(isLoading: Boolean) {
         progressLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
-        rvMatches.visibility = if (isLoading) View.GONE else View.VISIBLE
+        
+        val visibility = if (isLoading) View.GONE else View.VISIBLE
+        rvLiveMatches.visibility = visibility
+        rvMatches.visibility = visibility
+        view?.findViewById<View>(R.id.layout_live_header)?.visibility = visibility
+        view?.findViewById<View>(R.id.layout_past_header)?.visibility = visibility
     }
 
     private fun showError(isError: Boolean) {
         layoutErrorState.visibility = if (isError) View.VISIBLE else View.GONE
-        rvMatches.visibility = if (isError) View.GONE else View.VISIBLE
+        
+        val visibility = if (isError) View.GONE else View.VISIBLE
+        rvLiveMatches.visibility = visibility
+        rvMatches.visibility = visibility
+        view?.findViewById<View>(R.id.layout_live_header)?.visibility = visibility
+        view?.findViewById<View>(R.id.layout_past_header)?.visibility = visibility
     }
 }

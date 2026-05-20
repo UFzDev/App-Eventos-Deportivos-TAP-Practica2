@@ -203,68 +203,79 @@ class TeamsFragment : Fragment() {
         showError(false)
         teamList.clear()
 
-        // Cargar clubes de La Liga de España (ID 140, temporada 2024)
-        RetrofitClient.footballInstance.getTeamsByLeague(leagueId = 140, season = 2024)
-            .enqueue(object : Callback<FootballTeamResponse> {
-                override fun onResponse(call: Call<FootballTeamResponse>, response: Response<FootballTeamResponse>) {
-                    showLoading(false)
-                    if (response.isSuccessful && response.body() != null) {
-                        val body = response.body()!!
-                        
-                        // Diagnóstico de Errores nativos de API-Football (devueltos bajo HTTP 200)
-                        val errorsObj = body.errors
-                        if (errorsObj != null && !errorsObj.isJsonNull) {
-                            if (errorsObj.isJsonObject) {
-                                val obj = errorsObj.asJsonObject
-                                if (obj.size() > 0) {
-                                    val firstKey = obj.keySet().firstOrNull()
-                                    val errorMsg = obj.get(firstKey)?.asString ?: "Error desconocido"
-                                    android.util.Log.e("TeamsFragment", "Error de API-Football: $errorMsg")
-                                    Toast.makeText(context, "API Error: $errorMsg", Toast.LENGTH_LONG).show()
-                                    showError(true)
-                                    return
+        // Ligas premium a consultar en paralelo (Mundial: España, Inglaterra, Italia, Alemania)
+        val leagues = listOf(140, 39, 135, 78)
+        var completedRequests = 0
+        var successfulRequests = 0
+        var lastErrorMessage = ""
+
+        for (leagueId in leagues) {
+            RetrofitClient.footballInstance.getTeamsByLeague(leagueId = leagueId, season = 2024)
+                .enqueue(object : Callback<FootballTeamResponse> {
+                    override fun onResponse(call: Call<FootballTeamResponse>, response: Response<FootballTeamResponse>) {
+                        synchronized(this@TeamsFragment) {
+                            completedRequests++
+                            if (response.isSuccessful && response.body() != null) {
+                                val body = response.body()!!
+                                
+                                // Diagnóstico de Errores nativos de API-Football (devueltos bajo HTTP 200)
+                                val errorsObj = body.errors
+                                if (errorsObj != null && !errorsObj.isJsonNull) {
+                                    if (errorsObj.isJsonObject) {
+                                        val obj = errorsObj.asJsonObject
+                                        if (obj.size() > 0) {
+                                            val firstKey = obj.keySet().firstOrNull()
+                                            lastErrorMessage = obj.get(firstKey)?.asString ?: "Error"
+                                        }
+                                    } else if (errorsObj.isJsonPrimitive) {
+                                        lastErrorMessage = errorsObj.asString
+                                    }
                                 }
-                            } else if (errorsObj.isJsonPrimitive) {
-                                val errorMsg = errorsObj.asString
-                                if (errorMsg.isNotEmpty()) {
-                                    android.util.Log.e("TeamsFragment", "Error de API-Football: $errorMsg")
-                                    Toast.makeText(context, "API Error: $errorMsg", Toast.LENGTH_LONG).show()
-                                    showError(true)
-                                    return
+
+                                val responseItems = body.response
+                                if (!responseItems.isNullOrEmpty()) {
+                                    val teams = responseItems.map { it.team }
+                                    teamList.addAll(teams)
+                                    successfulRequests++
                                 }
+                            } else {
+                                lastErrorMessage = "HTTP ${response.code()}"
+                            }
+
+                            if (completedRequests == leagues.size) {
+                                onAllTeamsRequestsCompleted(successfulRequests, lastErrorMessage)
                             }
                         }
+                    }
 
-                        val responseItems = body.response
-                        if (!responseItems.isNullOrEmpty()) {
-                            val teams = responseItems.map { it.team }
-                            teamList.addAll(teams)
+                    override fun onFailure(call: Call<FootballTeamResponse>, t: Throwable) {
+                        synchronized(this@TeamsFragment) {
+                            completedRequests++
+                            lastErrorMessage = t.localizedMessage ?: "Fallo de conexión"
+                            if (completedRequests == leagues.size) {
+                                onAllTeamsRequestsCompleted(successfulRequests, lastErrorMessage)
+                            }
                         }
                     }
+                })
+        }
+    }
 
-                    if (teamList.isNotEmpty()) {
-                        // Mezclar los clubes de forma aleatoria para brindar una visualización dinámica
-                        teamList.shuffle()
-                        teamAdapter.updateList(teamList)
-                        showError(false)
-                    } else {
-                        showError(true)
-                        val errorDetail = response.errorBody()?.string() ?: "Respuesta vacía"
-                        android.util.Log.e("TeamsFragment", "Error en API-Football: $errorDetail")
-                        Toast.makeText(context, "No se encontraron equipos deportivos o tu API Key es inválida.", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<FootballTeamResponse>, t: Throwable) {
-                    showLoading(false)
-                    showError(true)
-                    Toast.makeText(
-                        context,
-                        "Error de red: ${t.localizedMessage ?: "Verifica tu conexión"}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
+    private fun onAllTeamsRequestsCompleted(successfulRequests: Int, lastError: String) {
+        showLoading(false)
+        if (teamList.isNotEmpty()) {
+            // Mezclar todos los clubes unificados para máxima dinamización visual de equipos mundiales
+            teamList.shuffle()
+            teamAdapter.updateList(teamList)
+            showError(false)
+            if (successfulRequests < 4 && lastError.isNotEmpty()) {
+                android.util.Log.w("TeamsFragment", "Carga parcial: algunas ligas no se cargaron. Detalle: $lastError")
+            }
+        } else {
+            showError(true)
+            val errorDisplay = if (lastError.isNotEmpty()) lastError else "API Key inválida o límite superado"
+            Toast.makeText(context, "No se encontraron equipos ($errorDisplay).", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {

@@ -13,13 +13,26 @@ interface FootballApiService {
         @Query("season") season: Int
     ): Call<FootballTeamResponse>
 
-    // Obtener los partidos anteriores/resultados de una liga específica
-    // Ejemplo: league = 140 para La Liga, season = 2025, last = 15 para obtener los últimos 15 partidos
+    // Obtener los partidos de una liga específica para procesar en cliente
+    // Ejemplo: league = 140 para La Liga, season = 2024
     @GET("fixtures")
     fun getPastMatchesByLeague(
         @Query("league") leagueId: Int,
-        @Query("season") season: Int,
-        @Query("last") lastCount: Int
+        @Query("season") season: Int
+    ): Call<FootballFixtureResponse>
+
+    // Obtener todos los partidos mundiales de una fecha específica
+    // Ejemplo: date = "2026-05-19"
+    @GET("fixtures")
+    fun getMatchesByDate(
+        @Query("date") date: String
+    ): Call<FootballFixtureResponse>
+
+    // Obtener los partidos en vivo (tiempo real)
+    // Ejemplo: live = "all" o "140" (La Liga)
+    @GET("fixtures")
+    fun getLiveMatches(
+        @Query("live") live: String
     ): Call<FootballFixtureResponse>
 
     // Obtener la plantilla de jugadores (roster/squad) de un equipo específico

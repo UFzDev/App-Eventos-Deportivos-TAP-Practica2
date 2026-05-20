@@ -40,7 +40,8 @@ data class FixtureDetails(
 )
 
 data class FixtureStatus(
-    @SerializedName("short") val short: String? // e.g. "FT" (Finished), "NS" (Not Started), "1H", "2H", "LIVE"
+    @SerializedName("short") val short: String?, // e.g. "FT" (Finished), "NS" (Not Started), "1H", "2H", "LIVE"
+    @SerializedName("elapsed") val elapsed: Int? // Minutos transcurridos
 )
 
 data class LeagueDetails(
