@@ -105,7 +105,7 @@ class RegisterFragment : Fragment() {
                                     user.updateProfile(profileUpdates)
                                         .addOnCompleteListener { profileTask ->
                                             Toast.makeText(context, getString(R.string.success_register), Toast.LENGTH_SHORT).show()
-                                            parentFragmentManager.clearBackStackAndNavigateTo(HomeFragment())
+                                            parentFragmentManager.clearBackStackAndNavigateTo(MainFragment())
                                         }
                                 }
                         }

@@ -39,4 +39,20 @@
     <string name="error_auth_failed">Fallo en la autenticación. Revisa tus credenciales</string>
     <string name="error_register_failed">Fallo en el registro. Intenta de nuevo</string>
     <string name="success_register">¡Usuario creado exitosamente!</string>
+
+    <!-- Bottom Navigation Tabs -->
+    <string name="tab_news">Noticias</string>
+    <string name="tab_teams">Equipos</string>
+    <string name="tab_matches">Partidos</string>
+    <string name="tab_favorites">Favoritos</string>
+    <string name="live_tag">LIVE</string>
+    <string name="two_min_ago">Hace 2 min</string>
+    <string name="one_hr_ago">Hace 1 hr</string>
+    <string name="three_hr_ago">Hace 3 hr</string>
+    <string name="five_hr_ago">Hace 5 hr</string>
+
+    <!-- Top Bar Toolbar -->
+    <string name="title_brand">SPORT HUB</string>
+    <string name="desc_notifications">Sin Notificaciones Nuevas</string>
+    <string name="desc_logout">Cerrar sesión</string>
 </resources>

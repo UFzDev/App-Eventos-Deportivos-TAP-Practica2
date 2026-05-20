@@ -35,7 +35,7 @@ class LoginFragment : Fragment() {
 
         // Si ya existe una sesión activa, redirige dinámicamente a Home para mejorar la UX
         if (auth.currentUser != null) {
-            parentFragmentManager.clearBackStackAndNavigateTo(HomeFragment())
+            parentFragmentManager.clearBackStackAndNavigateTo(MainFragment())
             return
         }
 
@@ -65,7 +65,7 @@ class LoginFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Navegación limpia al panel principal en caso de éxito
-                        parentFragmentManager.clearBackStackAndNavigateTo(HomeFragment())
+                        parentFragmentManager.clearBackStackAndNavigateTo(MainFragment())
                     } else {
                         // Reestablecer controles y notificar al usuario mediante Toasts dinámicos
                         setLoadingState(false, btnLogin, btnGuest)
@@ -85,7 +85,7 @@ class LoginFragment : Fragment() {
             auth.signInAnonymously()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        parentFragmentManager.clearBackStackAndNavigateTo(HomeFragment())
+                        parentFragmentManager.clearBackStackAndNavigateTo(MainFragment())
                     } else {
                         setLoadingState(false, btnLogin, btnGuest)
                         Toast.makeText(
