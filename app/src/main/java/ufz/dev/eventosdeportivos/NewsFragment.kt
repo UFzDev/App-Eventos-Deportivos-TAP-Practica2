@@ -106,7 +106,7 @@ class NewsFragment : Fragment() {
                         showError(false)
                     } else {
                         showError(true)
-                        Toast.makeText(context, "No se encontraron noticias deportivas.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "No se encontraron noticias de fútbol.", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     showError(true)

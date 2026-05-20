@@ -1,7 +1,7 @@
 <resources>
     <!-- General -->
-    <string name="app_name">Sport Hub</string>
-    <string name="login_subtitle">Monitoreo deportivo con consumo de apis</string>
+    <string name="app_name">Fútbol Hub</string>
+    <string name="login_subtitle">Monitoreo de fútbol con consumo de Apis</string>
 
     <!-- Form Labels and Placeholders -->
     <string name="email_label">Correo Electrónico</string>
@@ -16,7 +16,7 @@
 
     <!-- Register Specific -->
     <string name="register_title">Crear Cuenta</string>
-    <string name="register_subtitle">Únete a la comunidad de sports hub.</string>
+    <string name="register_subtitle">Únete a la comunidad de Fútbol Hub</string>
     <string name="name_label">Nombre Completo</string>
     <string name="name_placeholder">Tu nombre y apellido</string>
     <string name="confirm_password_label">Confirmar Contraseña</string>
@@ -28,7 +28,7 @@
 
     <!-- Home / Dashboard Specific -->
     <string name="home_welcome_title">Sesión Activa</string>
-    <string name="home_welcome_subtitle">Acceso deportivo autorizado</string>
+    <string name="home_welcome_subtitle">Acceso a Fútbol Hub autorizado</string>
     <string name="home_user_prefix">Entró: %1$s</string>
     <string name="btn_logout">Cerrar Sesión</string>
 
@@ -52,7 +52,7 @@
     <string name="five_hr_ago">Hace 5 hr</string>
 
     <!-- Top Bar Toolbar -->
-    <string name="title_brand">SPORT HUB</string>
+    <string name="title_brand">FÚTBOL HUB</string>
     <string name="desc_notifications">Sin Notificaciones Nuevas</string>
     <string name="desc_logout">Cerrar sesión</string>
 </resources>
