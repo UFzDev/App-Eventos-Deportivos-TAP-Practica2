@@ -17,6 +17,10 @@ import ufz.dev.eventosdeportivos.data.sports.FootballTeamResponse
 import ufz.dev.eventosdeportivos.data.sports.TeamDetails
 import ufz.dev.eventosdeportivos.data.sports.FootballSquadResponse
 import ufz.dev.eventosdeportivos.data.sports.SquadPlayerDetails
+import ufz.dev.eventosdeportivos.data.sports.FavoriteItem
+import ufz.dev.eventosdeportivos.data.network.FavoritesManager
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -34,6 +38,9 @@ class TeamsFragment : Fragment() {
 
     private lateinit var teamAdapter: TeamAdapter
     private val teamList = ArrayList<TeamDetails>()
+
+    private val favoritesSet = HashSet<String>()
+    private var favoritesListenerRegistration: ListenerRegistration? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,10 +63,77 @@ class TeamsFragment : Fragment() {
         return view
     }
 
-    private fun setupRecyclerView() {
-        teamAdapter = TeamAdapter(teamList) { team ->
-            showSquadBottomSheet(team)
+    override fun onStart() {
+        super.onStart()
+        if (FavoritesManager.isUserRegistered()) {
+            favoritesListenerRegistration = FavoritesManager.listenToFavorites(
+                onUpdate = { favorites ->
+                    favoritesSet.clear()
+                    favorites.forEach {
+                        if (it.type == "team") {
+                            favoritesSet.add(it.id)
+                        }
+                    }
+                },
+                onError = {
+                    android.util.Log.e("TeamsFragment", "Error al cargar favoritos: ${it.message}")
+                }
+            )
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        favoritesListenerRegistration?.remove()
+        favoritesListenerRegistration = null
+    }
+
+    private fun setupRecyclerView() {
+        teamAdapter = TeamAdapter(
+            teamList,
+            onTeamClick = { team ->
+                showSquadBottomSheet(team)
+            },
+            onFavoriteClick = { team ->
+                val itemId = team.id.toString()
+                if (!FavoritesManager.isUserRegistered()) {
+                    Toast.makeText(context, "Inicia sesión para guardar favoritos.", Toast.LENGTH_SHORT).show()
+                    return@TeamAdapter
+                }
+
+                if (favoritesSet.contains(itemId)) {
+                    FavoritesManager.removeFavorite(
+                        itemId,
+                        onSuccess = {
+                            Toast.makeText(context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al eliminar de favoritos: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                } else {
+                    val favItem = FavoriteItem(
+                        id = itemId,
+                        type = "team",
+                        title = team.name ?: "Sin nombre",
+                        subtitle = if (team.founded != null) "Fundado en ${team.founded}" else "Club Histórico",
+                        imageUrl = team.logo ?: "",
+                        dataJson = Gson().toJson(team)
+                    )
+                    FavoritesManager.addFavorite(
+                        favItem,
+                        onSuccess = {
+                            Toast.makeText(context, "Guardado en favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al guardar favorito: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            }
+        )
         rvTeams.layoutManager = LinearLayoutManager(context)
         rvTeams.adapter = teamAdapter
     }

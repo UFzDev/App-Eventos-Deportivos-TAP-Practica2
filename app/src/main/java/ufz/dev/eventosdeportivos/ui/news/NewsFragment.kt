@@ -18,6 +18,10 @@ import ufz.dev.eventosdeportivos.data.news.News
 import ufz.dev.eventosdeportivos.data.news.NewsResponse
 import ufz.dev.eventosdeportivos.data.network.RetrofitClient
 import ufz.dev.eventosdeportivos.BuildConfig
+import ufz.dev.eventosdeportivos.data.sports.FavoriteItem
+import ufz.dev.eventosdeportivos.data.network.FavoritesManager
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +38,9 @@ class NewsFragment : Fragment() {
     
     private lateinit var newsAdapter: NewsAdapter
     private val newsList = ArrayList<News>()
+
+    private val favoritesSet = HashSet<String>()
+    private var favoritesListenerRegistration: ListenerRegistration? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,18 +63,87 @@ class NewsFragment : Fragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (FavoritesManager.isUserRegistered()) {
+            favoritesListenerRegistration = FavoritesManager.listenToFavorites(
+                onUpdate = { favorites ->
+                    favoritesSet.clear()
+                    favorites.forEach {
+                        if (it.type == "news") {
+                            favoritesSet.add(it.id)
+                        }
+                    }
+                },
+                onError = {
+                    android.util.Log.e("NewsFragment", "Error al cargar favoritos: ${it.message}")
+                }
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        favoritesListenerRegistration?.remove()
+        favoritesListenerRegistration = null
+    }
+
     private fun setupRecyclerView() {
-        newsAdapter = NewsAdapter(newsList) { newsItem ->
-            // Open full article in browser on click
-            if (!newsItem.url.isNullOrEmpty()) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsItem.url))
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "No se pudo abrir el artículo", Toast.LENGTH_SHORT).show()
+        newsAdapter = NewsAdapter(
+            newsList,
+            onNewsClick = { newsItem ->
+                // Open full article in browser on click
+                if (!newsItem.url.isNullOrEmpty()) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsItem.url))
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "No se pudo abrir el artículo", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            onFavoriteClick = { newsItem ->
+                val itemId = FavoritesManager.getSafeId(newsItem.url ?: "")
+                if (itemId.isEmpty()) return@NewsAdapter
+
+                if (!FavoritesManager.isUserRegistered()) {
+                    Toast.makeText(context, "Inicia sesión para guardar favoritos.", Toast.LENGTH_SHORT).show()
+                    return@NewsAdapter
+                }
+
+                if (favoritesSet.contains(itemId)) {
+                    FavoritesManager.removeFavorite(
+                        itemId,
+                        onSuccess = {
+                            Toast.makeText(context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al eliminar de favoritos: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                } else {
+                    val favItem = FavoriteItem(
+                        id = itemId,
+                        type = "news",
+                        title = newsItem.title ?: "Sin título",
+                        subtitle = newsItem.published?.take(16) ?: "Reciente",
+                        imageUrl = newsItem.image ?: "",
+                        dataJson = Gson().toJson(newsItem)
+                    )
+                    FavoritesManager.addFavorite(
+                        favItem,
+                        onSuccess = {
+                            Toast.makeText(context, "Guardado en favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al guardar favorito: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
                 }
             }
-        }
+        )
         rvNews.layoutManager = LinearLayoutManager(context)
         rvNews.adapter = newsAdapter
     }

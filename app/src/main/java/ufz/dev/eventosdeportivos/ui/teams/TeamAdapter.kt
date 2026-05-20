@@ -7,12 +7,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.ListenerRegistration
 import ufz.dev.eventosdeportivos.R
 import ufz.dev.eventosdeportivos.data.sports.TeamDetails
+import ufz.dev.eventosdeportivos.data.network.FavoritesManager
 
+/**
+ * Adaptador de Equipos con botón de favoritos en tiempo real respaldado por Firestore.
+ */
 class TeamAdapter(
     private var teamList: List<TeamDetails>,
-    private val onTeamClick: (TeamDetails) -> Unit
+    private val onTeamClick: (TeamDetails) -> Unit,
+    private val onFavoriteClick: (TeamDetails) -> Unit
 ) : RecyclerView.Adapter<TeamAdapter.TeamViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TeamViewHolder {
@@ -21,7 +27,7 @@ class TeamAdapter(
     }
 
     override fun onBindViewHolder(holder: TeamViewHolder, position: Int) {
-        holder.bind(teamList[position], onTeamClick)
+        holder.bind(teamList[position], onTeamClick, onFavoriteClick)
     }
 
     override fun getItemCount(): Int = teamList.size
@@ -35,15 +41,24 @@ class TeamAdapter(
         private val imgBadge: ImageView = itemView.findViewById(R.id.img_team_badge)
         private val tvName: TextView = itemView.findViewById(R.id.tv_team_name)
         private val tvFounded: TextView = itemView.findViewById(R.id.tv_team_founded)
+        private val btnFavorite: ImageView = itemView.findViewById(R.id.btn_team_favorite)
+        private val btnInfo: ImageView = itemView.findViewById(R.id.img_team_info)
 
-        fun bind(team: TeamDetails, onClick: (TeamDetails) -> Unit) {
+        private var favoriteListener: ListenerRegistration? = null
+
+        fun bind(
+            team: TeamDetails,
+            onClick: (TeamDetails) -> Unit,
+            onFavClick: (TeamDetails) -> Unit
+        ) {
+            // Cancelar el escuchador anterior para evitar leaks
+            favoriteListener?.remove()
+            favoriteListener = null
+
             tvName.text = team.name
             tvFounded.text = if (team.founded != null) "FUNDADO EN ${team.founded}" else "CLUB HISTÓRICO"
 
-            // Forzar HTTPS en las URLs de imágenes de API-Football para evitar bloqueo de Cleartext Traffic en Android 9+
             val secureBadgeUrl = team.logo?.replace("http://", "https://")
-
-            // Usar GlideUrl con User-Agent estándar para evitar bloqueos HTTP 403 del CDN de API-Football
             val glideUrl = if (!secureBadgeUrl.isNullOrEmpty()) {
                 com.bumptech.glide.load.model.GlideUrl(
                     secureBadgeUrl,
@@ -55,7 +70,6 @@ class TeamAdapter(
                 null
             }
 
-            // Glide: Cargar el Escudo con listeners de monitoreo y placeholders descriptivos
             Glide.with(itemView.context)
                 .load(glideUrl)
                 .placeholder(R.drawable.ic_refresh)
@@ -71,7 +85,7 @@ class TeamAdapter(
                             "GlideError",
                             "Falla al cargar escudo de ${team.name}. URL: $secureBadgeUrl. Razón: ${e?.message}"
                         )
-                        return false // Permitir que Glide muestre el drawable de error (ic_teams)
+                        return false
                     }
 
                     override fun onResourceReady(
@@ -87,6 +101,18 @@ class TeamAdapter(
                 .fitCenter()
                 .into(imgBadge)
 
+            // Escuchar el estado de favorito en tiempo real
+            val itemId = team.id.toString()
+            if (FavoritesManager.isUserRegistered()) {
+                favoriteListener = FavoritesManager.checkIsFavoritedRealTime(itemId) { isFav ->
+                    btnFavorite.setImageResource(if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart)
+                }
+            } else {
+                btnFavorite.setImageResource(R.drawable.ic_heart)
+            }
+
+            btnFavorite.setOnClickListener { onFavClick(team) }
+            btnInfo.setOnClickListener { onClick(team) }
             itemView.setOnClickListener { onClick(team) }
         }
     }

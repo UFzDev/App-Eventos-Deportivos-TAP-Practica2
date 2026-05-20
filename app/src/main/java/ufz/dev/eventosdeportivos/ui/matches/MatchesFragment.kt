@@ -15,6 +15,10 @@ import ufz.dev.eventosdeportivos.R
 import ufz.dev.eventosdeportivos.data.network.RetrofitClient
 import ufz.dev.eventosdeportivos.data.sports.FootballFixtureResponse
 import ufz.dev.eventosdeportivos.data.sports.FixtureResponseItem
+import ufz.dev.eventosdeportivos.data.sports.FavoriteItem
+import ufz.dev.eventosdeportivos.data.network.FavoritesManager
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +43,9 @@ class MatchesFragment : Fragment() {
     private var liveRequestFailed = false
     private var pastRequestFailed = false
 
+    private val favoritesSet = HashSet<String>()
+    private var favoritesListenerRegistration: ListenerRegistration? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,6 +68,31 @@ class MatchesFragment : Fragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (FavoritesManager.isUserRegistered()) {
+            favoritesListenerRegistration = FavoritesManager.listenToFavorites(
+                onUpdate = { favorites ->
+                    favoritesSet.clear()
+                    favorites.forEach {
+                        if (it.type == "match") {
+                            favoritesSet.add(it.id)
+                        }
+                    }
+                },
+                onError = {
+                    android.util.Log.e("MatchesFragment", "Error al cargar favoritos: ${it.message}")
+                }
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        favoritesListenerRegistration?.remove()
+        favoritesListenerRegistration = null
+    }
+
     private fun setupRecyclerViews() {
         // 1. Carrusel Horizontal en Vivo
         liveAdapter = LiveMatchAdapter(liveList) { match ->
@@ -70,9 +102,51 @@ class MatchesFragment : Fragment() {
         rvLiveMatches.adapter = liveAdapter
 
         // 2. Historial Vertical Normal
-        matchAdapter = MatchAdapter(matchList) { match ->
-            // Acción de clic silenciosa en el historial de partidos
-        }
+        matchAdapter = MatchAdapter(
+            matchList,
+            onMatchClick = { match ->
+                // Acción de clic silenciosa en el historial de partidos
+            },
+            onFavoriteClick = { match ->
+                val itemId = match.fixture.id.toString()
+                if (!FavoritesManager.isUserRegistered()) {
+                    Toast.makeText(context, "Inicia sesión para guardar favoritos.", Toast.LENGTH_SHORT).show()
+                    return@MatchAdapter
+                }
+
+                if (favoritesSet.contains(itemId)) {
+                    FavoritesManager.removeFavorite(
+                        itemId,
+                        onSuccess = {
+                            Toast.makeText(context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al eliminar de favoritos: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                } else {
+                    val favItem = FavoriteItem(
+                        id = itemId,
+                        type = "match",
+                        title = "${match.teams.home.name} vs ${match.teams.away.name}",
+                        subtitle = "${match.goals.home ?: 0} - ${match.goals.away ?: 0}",
+                        imageUrl = match.teams.home.logo ?: "",
+                        dataJson = Gson().toJson(match)
+                    )
+                    FavoritesManager.addFavorite(
+                        favItem,
+                        onSuccess = {
+                            Toast.makeText(context, "Guardado en favoritos", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { e ->
+                            val msg = e.localizedMessage ?: "Error desconocido"
+                            Toast.makeText(context, "Error al guardar favorito: $msg", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            }
+        )
         rvMatches.layoutManager = LinearLayoutManager(context)
         rvMatches.adapter = matchAdapter
     }

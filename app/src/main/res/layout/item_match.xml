@@ -15,6 +15,17 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Botón de Favorito Flotante -->
+        <ImageView
+            android:id="@+id/btn_match_favorite"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_heart"
+            android:contentDescription="Favorito"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- Guideline Center -->
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/center_guideline"
