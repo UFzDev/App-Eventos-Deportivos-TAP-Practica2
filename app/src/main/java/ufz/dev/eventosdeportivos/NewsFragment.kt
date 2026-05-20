@@ -92,6 +92,7 @@ class NewsFragment : Fragment() {
         RetrofitClient.instance.getLatestSportsNews(
             category = "sports",
             language = "es",
+            keywords = "futbol",
             apiKey = currentsApiKey
         ).enqueue(object : Callback<NewsResponse> {
             override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
