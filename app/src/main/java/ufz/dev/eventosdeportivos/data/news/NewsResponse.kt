@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos.data.model
+package ufz.dev.eventosdeportivos.data.news
 
 import com.google.gson.annotations.SerializedName
 

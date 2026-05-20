@@ -1,5 +1,6 @@
 package ufz.dev.eventosdeportivos.data.network
 
+import ufz.dev.eventosdeportivos.data.news.CurrentsApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.ui.auth.LoginFragment
+import ufz.dev.eventosdeportivos.utils.clearBackStackAndNavigateTo
 
 /**
  * Fragmento de Bienvenida (Home) que muestra el estado de sesión activa del usuario

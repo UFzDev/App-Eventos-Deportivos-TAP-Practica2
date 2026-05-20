@@ -1,12 +1,12 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.teams
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import ufz.dev.eventosdeportivos.R
 
 class TeamsFragment : Fragment() {
 

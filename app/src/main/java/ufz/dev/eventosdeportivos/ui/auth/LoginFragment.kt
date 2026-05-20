@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.auth
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.ui.main.MainFragment
+import ufz.dev.eventosdeportivos.utils.clearBackStackAndNavigateTo
+import ufz.dev.eventosdeportivos.utils.navigateTo
 
 /**
  * Fragmento encargado de gestionar el Inicio de Sesión de los usuarios.

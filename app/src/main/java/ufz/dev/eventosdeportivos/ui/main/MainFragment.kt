@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.ui.auth.LoginFragment
+import ufz.dev.eventosdeportivos.ui.news.NewsFragment
+import ufz.dev.eventosdeportivos.ui.teams.TeamsFragment
+import ufz.dev.eventosdeportivos.ui.matches.MatchesFragment
+import ufz.dev.eventosdeportivos.ui.favorites.FavoritesFragment
+import ufz.dev.eventosdeportivos.utils.clearBackStackAndNavigateTo
 
 class MainFragment : Fragment() {
 

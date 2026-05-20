@@ -1,6 +1,5 @@
-package ufz.dev.eventosdeportivos.data.network
+package ufz.dev.eventosdeportivos.data.news
 
-import ufz.dev.eventosdeportivos.data.model.NewsResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

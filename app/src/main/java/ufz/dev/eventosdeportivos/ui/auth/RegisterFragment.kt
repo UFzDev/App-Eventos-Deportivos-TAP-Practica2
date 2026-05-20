@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.auth
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,10 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.ui.main.MainFragment
+import ufz.dev.eventosdeportivos.utils.clearBackStackAndNavigateTo
+import ufz.dev.eventosdeportivos.utils.navigateBackOr
 
 /**
  * Fragmento encargado de gestionar el Registro de nuevos usuarios en la plataforma.

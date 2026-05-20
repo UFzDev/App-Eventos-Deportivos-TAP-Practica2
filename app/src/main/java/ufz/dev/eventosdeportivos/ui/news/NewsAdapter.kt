@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.news
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ufz.dev.eventosdeportivos.data.model.News
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.data.news.News
 
 class NewsAdapter(
     private var newsList: List<News>,

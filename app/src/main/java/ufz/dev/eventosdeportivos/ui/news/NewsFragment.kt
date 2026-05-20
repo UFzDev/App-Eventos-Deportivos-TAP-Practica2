@@ -1,4 +1,4 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.ui.news
 
 import android.content.Intent
 import android.net.Uri
@@ -13,8 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ufz.dev.eventosdeportivos.data.model.News
-import ufz.dev.eventosdeportivos.data.model.NewsResponse
+import ufz.dev.eventosdeportivos.R
+import ufz.dev.eventosdeportivos.data.news.News
+import ufz.dev.eventosdeportivos.data.news.NewsResponse
 import ufz.dev.eventosdeportivos.data.network.RetrofitClient
 import ufz.dev.eventosdeportivos.BuildConfig
 import retrofit2.Call

@@ -1,8 +1,9 @@
-package ufz.dev.eventosdeportivos
+package ufz.dev.eventosdeportivos.utils
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import ufz.dev.eventosdeportivos.R
 
 /**
  * Extensiones de utilidad para simplificar la navegación entre Fragmentos en Android.
